@@ -57,7 +57,7 @@ public:
         std::uniform_real_distribution<float> disX(-intensityX, intensityX);
         std::uniform_real_distribution<float> disY(-intensityY, intensityY);
         std::uniform_real_distribution<float> angle(-360.0f, 360.0f);
-        float radian = angle(gen) / 2261.94671052f;
+        float radian = angle(gen) / 360 * 3.1415926535 * 2;
         CameraFocusX += disX(gen) * std::cos(radian);
         CameraFocusY += disY(gen) * std::sin(radian);
     }
