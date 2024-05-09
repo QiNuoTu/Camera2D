@@ -2,9 +2,12 @@
 Camera2D is a 2D camera class, primarily designed to implement 2D perspective transformation and some basic camera control functionalities.
 ![GIF](https://github.com/QiNuoTu/Camera2D/assets/76236817/5400a7be-3681-4582-912e-d618a7dd74ba)
 
+
 ---
 
 # Camera2D 类帮助文档
+
+这个文档提供了`Camera2D`类的基本使用指南，包括如何创建对象、设置属性、执行操作和坐标转换。示例代码展示了如何在实际程序中使用这个类。
 
 ## 概述
 `Camera2D`是一个用于处理2D摄像机视角转换和控制的类。它允许用户设置摄像机的视口大小、世界大小、焦点位置，并且提供了摄像机的缩放、平滑移动、抖动和边界检查等功能。
@@ -170,44 +173,50 @@ void DrawTextureAt(Camera2D& camera, Spirit& spirit, float x, float y, float sca
     Screen_POINT_Y -= spirit.HalfHeight * scaleY;
     spirit.Draw(Screen_POINT_X, Screen_POINT_Y, scaleX, scaleY);
 }
-//实际案例千万注意，坐标系与认知是正向的，
+//实际案例千万注意，坐标系是已窗口中心为0且是正向的，
 void Example() {
+if (Q_Engine.GetKeyState(SPACE_KEY) == KEY_PRESSED) {
     if (Q_Engine.GetKeyState(A_KEY) == KEY_PRESSED) {
-        Player.X = Player.X + 500 * Q_Engine.GetRenderRate() / 1000.0f;
+        Player2.X = Player2.X + 500 * Q_Engine.GetRenderRate() / 1000;
     }
     if (Q_Engine.GetKeyState(D_KEY) == KEY_PRESSED) {
-        Player.X = Player.X - 500 * Q_Engine.GetRenderRate() / 1000.0f;
+        Player2.X = Player2.X - 500 * Q_Engine.GetRenderRate() / 1000;
     }
     if (Q_Engine.GetKeyState(W_KEY) == KEY_PRESSED) {
-        Player.Y = Player.Y + 500 * Q_Engine.GetRenderRate() / 1000.0f;
+        Player2.Y = Player2.Y + 500 * Q_Engine.GetRenderRate() / 1000;
     }
     if (Q_Engine.GetKeyState(S_KEY) == KEY_PRESSED) {
-        Player.Y = Player.Y - 500 * Q_Engine.GetRenderRate() / 1000.0f;
+        Player2.Y = Player2.Y - 500 * Q_Engine.GetRenderRate() / 1000;
     }
-
-    // 检查鼠标左键单击事件并进行屏幕到世界的坐标转换
-    if (Q_Engine.GetMouseKeyClick(MOUSE_LEFT_BUTTON)) {
-        POINT point;
-        Q_Camera.ScreenToWorld(Q_Engine.GetMousePosition().X, Q_Engine.GetMousePosition().Y, point.X, point.Y);
+    Q_Camera.SmoothMoveToTarget(Player2, 0.1);
+} else {
+    if (Q_Engine.GetKeyState(A_KEY) == KEY_PRESSED) {
+        Player.X = Player.X + 500 * Q_Engine.GetRenderRate() / 1000;
     }
-
-    // 摄像机平滑跟随玩家
-    Q_Camera.SmoothMoveToPosition(Player.X, Player.Y, 0.1f);
-
-    // 检查鼠标滚轮状态并更新摄像机缩放
-    if (Q_Engine.GetMouseWheelState()) {
-        float zoom = Q_Camera.GetScaleX() + Q_Engine.GetMouseWheelValue() * 0.1f;
-        Q_Camera.SetScale(zoom, zoom);
+    if (Q_Engine.GetKeyState(D_KEY) == KEY_PRESSED) {
+        Player.X = Player.X - 500 * Q_Engine.GetRenderRate() / 1000;
     }
-
-    // 渲染纹理和玩家
-    Q_GLTexture1.DrawTextureAt(0, 0);
-    Q_Camera.WorldToScreen(POINT.X, POINT.Y, _POINT.X, _POINT.Y);
-    Q_Engine.FillCircle(_POINT.X, _POINT.Y, 10);
-    Q_GLTexture2.DrawTextureAt(Player.X, Player.Y, 0.01f, 0.01f);
+    if (Q_Engine.GetKeyState(W_KEY) == KEY_PRESSED) {
+        Player.Y = Player.Y + 500 * Q_Engine.GetRenderRate() / 1000;
+    }
+    if (Q_Engine.GetKeyState(S_KEY) == KEY_PRESSED) {
+        Player.Y = Player.Y - 500 * Q_Engine.GetRenderRate() / 1000;
+    }
+    Q_Camera.SmoothMoveToTarget(Player, 0.1);
+}
+if (Q_Engine.GetMouseClick(MOUSE_LEFT_BUTTON)) {
+    Q_Camera.ScreenToWorld(Q_Engine.GetMousePosition(), POINT);
+}
+if (Q_Engine.GetMouseWheelState(VALUE)) {
+    float zoom = Zoom + VALUE * 0.1f;
+    Q_Camera.SetScale(zoom, zoom);
+}
+GLTexture1.StandardRender(0, 0);
+Q_Camera.WorldToScreen(POINT.X, POINT.Y, _POINT.X, _POINT.Y);
+Q_Engine.FillCircle(_POINT.X, _POINT.Y, 10);
+GLTexture2.StandardRender(Player.X, Player.Y, 0.01f, 0.01f);
+GLTexture3.StandardRender(Player2.X, Player2.Y, 0.05f, 0.05f);
+GLSubtitle.RenderSubtitle(std::to_string(Q_FPS), BLUE_ARGB, 0, 0);
 }
 ```
 ---
-
-
-这个文档提供了`Camera2D`类的基本使用指南，包括如何创建对象、设置属性、执行操作和坐标转换。示例代码展示了如何在实际程序中使用这个类。
