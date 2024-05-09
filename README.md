@@ -1,6 +1,6 @@
 # Camera2D
 Camera2D is a 2D camera class, primarily designed to implement 2D perspective transformation and some basic camera control functionalities.
-![Uploading GIF.gif…]()
+![GIF](https://github.com/QiNuoTu/Camera2D/assets/76236817/5400a7be-3681-4582-912e-d618a7dd74ba)
 
 ---
 
