@@ -39,7 +39,14 @@ float GetScale() const;
 void SetScale(float Zoom = 1);
 ```
 - **参数**:
-  - `Zoom`: 设置摄像机在X轴上的缩放比例，默认为1。
+  - `Zoom`: 设置摄像机缩放比例，默认为1。
+
+### 设置缩放比例
+```cpp
+void Scale(float Zoom = 1);
+```
+- **参数**:
+  - `Zoom`: 缩放摄像机比例，默认为1。
 
 ### 平滑移动到指定位置
 ```cpp
