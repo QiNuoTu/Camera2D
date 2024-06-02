@@ -9,26 +9,38 @@ public:
         ViewportCenterY(Viewport_Height * 0.5f),
         ViewportWidth(Viewport_Width),
         ViewportHeight(Viewport_Height),
-        BoundaryLeft(-World_Width * 0.5),
-        BoundaryTop(-World_Height * 0.5),
-        BoundaryRight(World_Width * 0.5),
-        BoundaryBottom(World_Height * 0.5),
-        TargetPositionX(0),
-        TargetPositionY(0),
+        WorldBoundaryLeft(-World_Width * 0.5),
+        WorldBoundaryTop(-World_Height * 0.5),
+        WorldBoundaryRight(World_Width * 0.5),
+        WorldBoundaryBottom(World_Height * 0.5),
+        TargetX(0),
+        TargetY(0),
         CameraFocusX(FocusX),
         CameraFocusY(FocusY),
-        ZoomWidth(1), ZoomHeight(1) {}
+        Zoom(1){}
 
     ~Camera2D() = default;
 
-    float GetScaleX() const { return ZoomWidth; }
-    
-    float GetScaleY() const { return ZoomHeight; }
+    void ScreenToWorld(float screenX, float screenY, float& worldX, float& worldY) const {
+        worldX = CameraFocusX - (screenX - ViewportCenterX) / Zoom;
+        worldY = CameraFocusY - (screenY - ViewportCenterY) / Zoom;
+    }
 
-    void SetScale(float Zoom_Width = 1, float Zoom_Height = 1)
+    void WorldToScreen(float worldX, float worldY, float& screenX, float& screenY) const {
+        screenX = ViewportCenterX + (CameraFocusX - worldX) * Zoom;
+        screenY = ViewportCenterY + (CameraFocusY - worldY) * Zoom;
+    }
+
+    float GetScale() const { return Zoom; }
+
+    void SetScale(float zoom = 1)
     {
-        ZoomWidth = Zoom_Width;
-        ZoomHeight = Zoom_Height;
+        Zoom = zoom;
+    }
+
+    void Scale(float zoom = 1)
+    {
+        Zoom += zoom;
     }
 
     void SmoothMoveToPosition(float targetX, float targetY, float smoothing = 0.5f) {
@@ -37,13 +49,13 @@ public:
     }
 
     void SetTarget(float targetX, float targetY) {
-        TargetPositionX = targetX;
-        TargetPositionY = targetY;
+        TargetX = targetX;
+        TargetY = targetY;
     }
 
     void SmoothMoveToTarget(float smoothing = 0.5f) {
-        CameraFocusX += (TargetPositionX - CameraFocusX) * smoothing;
-        CameraFocusY += (TargetPositionY - CameraFocusY) * smoothing;
+        CameraFocusX += (TargetX - CameraFocusX) * smoothing;
+        CameraFocusY += (TargetY - CameraFocusY) * smoothing;
     }
 
     void Shake(float intensityX = 5.5f, float intensityY = 5.5f) {
@@ -69,16 +81,6 @@ public:
         ViewportCenterY = ViewportHeight * 0.5f;
     }
 
-    void ScreenToWorld(float screenX, float screenY, float& worldX, float& worldY) const {
-         worldX = CameraFocusX - (screenX - ViewportCenterX) / ZoomWidth;
-         worldY = CameraFocusY - (screenY - ViewportCenterY) / ZoomHeight;
-    }
-
-    void WorldToScreen(float worldX, float worldY, float& screenX, float& screenY) const {
-        screenX = ViewportCenterX + (CameraFocusX - worldX) * ZoomWidth;
-        screenY = ViewportCenterY + (CameraFocusY - worldY) * ZoomHeight;
-    }
-
     void SetFocus(float FocusX, float FocusY) {
         CameraFocusX = FocusX;
         CameraFocusY = FocusY;
@@ -94,50 +96,49 @@ public:
     float GetFocusY() const { return CameraFocusY; }
 
     void SetWorldSize(float Width, float Height) {
-        BoundaryLeft = -Width * 0.5f;
-        BoundaryTop = -Height * 0.5f;
-        BoundaryRight = Width * 0.5f;
-        BoundaryBottom = Height * 0.5f;
+        WorldBoundaryLeft = -Width * 0.5f;
+        WorldBoundaryTop = -Height * 0.5f;
+        WorldBoundaryRight = Width * 0.5f;
+        WorldBoundaryBottom = Height * 0.5f;
     }
 
     bool SetWorldBoundaries(float left, float top, float right, float bottom) {
         if (left < right && top < bottom) {
-            BoundaryLeft = left;
-            BoundaryTop = top;
-            BoundaryRight = right;
-            BoundaryBottom = bottom;
+            WorldBoundaryLeft = left;
+            WorldBoundaryTop = top;
+            WorldBoundaryRight = right;
+            WorldBoundaryBottom = bottom;
             return true;
         }
         return false;
     }
 
-    bool ViewportCheckBoundaries() {
-        if (CameraFocusX - ViewportCenterX < BoundaryLeft)   { CameraFocusX = BoundaryLeft + ViewportWidth; }
-        if (CameraFocusX + ViewportCenterX > BoundaryRight)  { CameraFocusX = BoundaryRight - ViewportWidth; }
-        if (CameraFocusY - ViewportCenterY < BoundaryTop)    { CameraFocusY = BoundaryTop + ViewportHeight; }
-        if (CameraFocusY + ViewportCenterY > BoundaryBottom) { CameraFocusY = BoundaryBottom - ViewportHeight; }
+    void ViewportCheckBoundaries() {
+        float scaledOffsetX = ViewportCenterX / Zoom;
+        float scaledOffsetY = ViewportCenterY / Zoom;
+        CameraFocusX = std::max(WorldBoundaryLeft + scaledOffsetX, std::min(CameraFocusX, WorldBoundaryRight - scaledOffsetX));
+        CameraFocusY = std::max(WorldBoundaryTop + scaledOffsetY, std::min(CameraFocusY, WorldBoundaryBottom - scaledOffsetY));
+
+        if (ViewportWidth / Zoom > WorldBoundaryRight - WorldBoundaryLeft) {
+            CameraFocusX = (WorldBoundaryLeft + WorldBoundaryRight) * 0.5f;
+        }
+        if (ViewportHeight / Zoom > WorldBoundaryBottom - WorldBoundaryTop) {
+            CameraFocusY = (WorldBoundaryTop + WorldBoundaryBottom) * 0.5f;
+        }
     }
 
-    bool CheckBoundaries() {
-        if (CameraFocusX < BoundaryLeft)   { CameraFocusX = BoundaryLeft; }
-        if (CameraFocusX > BoundaryRight)  { CameraFocusX = BoundaryRight; }
-        if (CameraFocusY < BoundaryTop)    { CameraFocusY = BoundaryTop; }
-        if (CameraFocusY > BoundaryBottom) { CameraFocusY = BoundaryBottom; }
-    }
-
-    bool GetFocusRect(float& left, float& top, float& right, float& bottom) {
-        left = CameraFocusX - ViewportCenterX;
-        top = CameraFocusY - ViewportCenterY;
-        right = ViewportWidth;
-        bottom = ViewportHeight;
+    void GetFocusRect(float& left, float& top, float& right, float& bottom) {
+         left = CameraFocusX - ViewportCenterX;
+         top = CameraFocusY - ViewportCenterY;
+         right = CameraFocusX + ViewportCenterX;
+         bottom = CameraFocusY + ViewportCenterY;
     }
 
 private:
     std::random_device rd;
     std::mt19937 gen(rd());
-    float TargetPositionX, TargetPositionY;
+    float TargetX, TargetY;
     float CameraFocusX, CameraFocusY;
     float ViewportCenterX, ViewportCenterY, ViewportWidth, ViewportHeight;
-    float ZoomWidth, ZoomHeight;
-    float BoundaryLeft, BoundaryTop, BoundaryRight, BoundaryBottom;
+    float Zoom, WorldBoundaryLeft, WorldBoundaryTop, WorldBoundaryRight, WorldBoundaryBottom;
 };
