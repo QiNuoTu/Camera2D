@@ -1,86 +1,82 @@
 #ifndef CAMERA2D_H
 #define CAMERA2D_H
 
-#include <cmath>
 #include <random>
-//Camera2DÊÇÒ»¸ö£¬2DµÄÉãÏñ»úÀà£¬Ö÷Òª¹¦ÄÜÊÇÊµÏÖ2DµÄÊÓ½Ç×ª»»£¬ÒÔ¼°Ò»Ğ©¼òµ¥µÄÉãÏñ»ú¿ØÖÆ¹¦ÄÜ¡£
+//Camera2Dæ˜¯ä¸€ä¸ªï¼Œ2Dçš„æ‘„åƒæœºç±»ï¼Œä¸»è¦åŠŸèƒ½æ˜¯å®ç°2Dçš„è§†è§’è½¬æ¢ï¼Œä»¥åŠä¸€äº›ç®€å•çš„æ‘„åƒæœºæ§åˆ¶åŠŸèƒ½ã€‚
 class Camera2D {
 public:
-    //¹¹Ôìº¯Êı£¬ÉèÖÃÊÓ¿Ú´óĞ¡£¬ÊÀ½ç´óĞ¡£¬ÒÔ¼°½¹µãÎ»ÖÃ
+    //æ„é€ å‡½æ•°ï¼Œè®¾ç½®è§†å£å¤§å°ï¼Œä¸–ç•Œå¤§å°ï¼Œä»¥åŠç„¦ç‚¹ä½ç½®
     Camera2D(float Viewport_Width, float Viewport_Height,
         float World_Width, float World_Height,
         float FocusX = 0, float FocusY = 0);
  
-    //Îö¹¹º¯Êı
+    //ææ„å‡½æ•°
     ~Camera2D() = default;
 
-    //È¡µÃÉãÏñ»úµÄXËõ·Å±ÈÀı
-    float GetScaleX() const;
-
-    //È¡µÃÉãÏñ»úµÄYËõ·Å±ÈÀı
-    float GetScaleY() const;
-
-    //ÉèÖÃÉãÏñ»úµÄËõ·Å±ÈÀı
-    void SetScale(float Zoom_Width = 1, float Zoom_Height = 1);
-
-    //½¹µã¸úËæÄ³µãÒÆ¶¯£¬´øÓĞÆ½»¬Ğ§¹û
-    void SmoothMoveToPosition(float targetX, float targetY, float smoothing = 0.5f);
-
-    //ÉèÖÃÄ¿±êµã
-    void SetTarget(float targetX, float targetY);
-
-    //ÒÆ¶¯µ½Ä¿±êµã£¬´øÓĞÆ½»¬Ğ§¹û¡£
-    void SmoothMoveToTarget(float smoothing = 0.5f);
-
-    //ÉãÏñ»ú¶¶¶¯£¬´øÓĞËæ»úĞ§¹û
-    void Shake(float intensityX = 5.5f, float intensityY = 5.5f);
-
-    //ÉãÏñ»úÒÑÔ²ĞÎÇøÓò¶¶¶¯£¬´øÓĞËæ»úĞ§¹û
-    void ShakeCircle(float intensityX = 5.5f, float intensityY = 5.5f);
-    //ÉèÖÃÊÓ¿Ú´óĞ¡
-    void SetCameraCenter(short int Viewport_Width, short int Viewport_Height);
-
-    //´°¿Ú×ø±êµ½ÊÀ½ç×ø±ê
+    //çª—å£åæ ‡åˆ°ä¸–ç•Œåæ ‡
     void ScreenToWorld(float screenX, float screenY, float& worldX, float& worldY) const;
 
-    //ÊÀ½ç×ø±êµ½´°¿Ú×ø±ê
+    //ä¸–ç•Œåæ ‡åˆ°çª—å£åæ ‡
     void WorldToScreen(float worldX, float worldY, float& screenX, float& screenY) const;
 
-    //ÉèÖÃ½¹µãÎ»ÖÃ
+    //å–å¾—ç¼©æ”¾æ¯”ä¾‹
+    float GetScale() const;
+
+    //è®¾ç½®æ‘„åƒæœºçš„ç¼©æ”¾æ¯”ä¾‹
+    void SetScale(float Zoom_Width = 1, float Zoom_Height = 1);
+ 
+    //æ¯”ä¾‹ç¼©æ”¾
+    void Scale(float Zoom_Width = 1, float Zoom_Height = 1);
+
+    //ç„¦ç‚¹è·ŸéšæŸç‚¹ç§»åŠ¨ï¼Œå¸¦æœ‰å¹³æ»‘æ•ˆæœ
+    void SmoothMoveToPosition(float targetX, float targetY, float smoothing = 0.5f);
+
+    //è®¾ç½®ç›®æ ‡ç‚¹
+    void SetTarget(float targetX, float targetY);
+
+    //ç§»åŠ¨åˆ°ç›®æ ‡ç‚¹ï¼Œå¸¦æœ‰å¹³æ»‘æ•ˆæœã€‚
+    void SmoothMoveToTarget(float smoothing = 0.5f);
+
+    //æ‘„åƒæœºæŠ–åŠ¨ï¼Œå¸¦æœ‰éšæœºæ•ˆæœ
+    void Shake(float intensityX = 5.5f, float intensityY = 5.5f);
+
+    //æ‘„åƒæœºå·²åœ†å½¢åŒºåŸŸæŠ–åŠ¨ï¼Œå¸¦æœ‰éšæœºæ•ˆæœ
+    void ShakeCircle(float intensityX = 5.5f, float intensityY = 5.5f);
+   
+    //è®¾ç½®è§†å£å¤§å°
+    void SetCameraCenter(short int Viewport_Width, short int Viewport_Height);
+
+    //è®¾ç½®ç„¦ç‚¹ä½ç½®
     void SetFocus(float FocusX, float FocusY);
 
-    //ÒÆ¶¯ÉãÏñ»úÎ»ÖÃ
+    //ç§»åŠ¨æ‘„åƒæœºä½ç½®
     void Move(float deltaX, float deltaY);
 
-    //È¡µÃ½¹µãÎ»ÖÃX
+    //å–å¾—ç„¦ç‚¹ä½ç½®X
     float GetFocusX() const;
 
-    //È¡µÃ½¹µãÎ»ÖÃY
+    //å–å¾—ç„¦ç‚¹ä½ç½®Y
     float GetFocusY() const;
 
-    //ÉèÖÃÊÀ½ç´óĞ¡
+    //è®¾ç½®ä¸–ç•Œå¤§å°
     void SetWorldSize(float Width, float Height);
 
-    //ÉèÖÃÊÀ½ç±ß½ç
+    //è®¾ç½®ä¸–ç•Œè¾¹ç•Œ
     bool SetWorldBoundaries(float left, float top, float right, float bottom);
 
-    //¼ì²éÊÓ¿ÚÎ»ÖÃ£¬·ÀÖ¹ÉãÏñ»ú³¬³ö±ß½ç
+    //æ£€æŸ¥è§†å£ä½ç½®ï¼Œé˜²æ­¢æ‘„åƒæœºè¶…å‡ºè¾¹ç•Œ
     bool ViewportCheckBoundaries();
 
-    //¼ì²é½¹µãÎ»ÖÃ·ÀÖ¹ÉãÏñ»ú³¬³ö±ß½ç
-    bool CheckBoundaries();
-
-    //È¡µÃÊÓ¿Ú¾ØĞÎ
+    //å–å¾—è§†å£çŸ©å½¢
     bool GetFocusRect(float& left, float& top, float& right, float& bottom);
 
 private:
     std::random_device rd;
     std::mt19937 gen(rd());
-    float TargetPositionX, TargetPositionY;
+    float TargetX, TargetY;
     float CameraFocusX, CameraFocusY;
     float ViewportCenterX, ViewportCenterY, ViewportWidth, ViewportHeight;
-    float ZoomWidth, ZoomHeight;
-    float BoundaryLeft, BoundaryTop, BoundaryRight, BoundaryBottom;
+    float Zoom,WorldBoundaryLeft, WorldBoundaryTop, WorldBoundaryRight, WorldBoundaryBottom;
 };
 
 #endif // CAMERA2D_H
