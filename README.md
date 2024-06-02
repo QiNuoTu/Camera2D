@@ -30,18 +30,16 @@ Camera2D(float Viewport_Width, float Viewport_Height,
 
 ### 获取缩放比例
 ```cpp
-float GetScaleX() const;
-float GetScaleY() const;
+float GetScale() const;
 ```
-- **返回值**: 分别返回摄像机在X轴和Y轴上的缩放比例。
+- **返回值**: 返回摄像机的缩放比例。
 
 ### 设置缩放比例
 ```cpp
-void SetScale(float Zoom_Width = 1, float Zoom_Height = 1);
+void SetScale(float Zoom = 1);
 ```
 - **参数**:
-  - `Zoom_Width`: 设置摄像机在X轴上的缩放比例，默认为1。
-  - `Zoom_Height`: 设置摄像机在Y轴上的缩放比例，默认为1。
+  - `Zoom`: 设置摄像机在X轴上的缩放比例，默认为1。
 
 ### 平滑移动到指定位置
 ```cpp
