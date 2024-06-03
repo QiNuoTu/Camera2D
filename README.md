@@ -62,7 +62,6 @@ void SmoothMoveToPosition(float targetX, float targetY, float smoothing = 0.5f);
 void SetTarget(float targetX, float targetY);
 void SmoothMoveToTarget(float smoothing = 0.5f);
 ```
-- **参数**: 同上。
 
 ### 摄像机抖动
 ```cpp
@@ -76,7 +75,6 @@ void Shake(float intensityX = 5.5f, float intensityY = 5.5f);
 ```cpp
 void ShakeCircle(float intensityX = 5.5f, float intensityY = 5.5f);
 ```
-- **参数**: 同上。
 
 ### 设置视口大小
 ```cpp
@@ -154,9 +152,7 @@ int main() {
     camera.Shake(10.0f, 10.0f);
 
     // 检查并修正摄像机位置，确保不超出边界
-    if (!camera.ViewportCheckBoundaries()) {
-        // 处理边界检查失败的情况
-    }
+    camera.ViewportCheckBoundaries()
 
     return 0;
 }
@@ -181,32 +177,10 @@ void DrawTextureAt(Camera2D& camera, Spirit& spirit, float x, float y, float sca
 //实际案例千万注意，坐标系是已窗口中心为0且是正向的，
 void Example() {
 if (Q_Engine.GetKeyState(SPACE_KEY) == KEY_PRESSED) {
-    if (Q_Engine.GetKeyState(A_KEY) == KEY_PRESSED) {
-        Player2.X = Player2.X + 500 * Q_Engine.GetRenderRate() / 1000;
-    }
-    if (Q_Engine.GetKeyState(D_KEY) == KEY_PRESSED) {
-        Player2.X = Player2.X - 500 * Q_Engine.GetRenderRate() / 1000;
-    }
-    if (Q_Engine.GetKeyState(W_KEY) == KEY_PRESSED) {
-        Player2.Y = Player2.Y + 500 * Q_Engine.GetRenderRate() / 1000;
-    }
-    if (Q_Engine.GetKeyState(S_KEY) == KEY_PRESSED) {
-        Player2.Y = Player2.Y - 500 * Q_Engine.GetRenderRate() / 1000;
-    }
+    Move_Even(Q_Engine.GetKeyState(A_KEY),Q_Engine.GetKeyState(D_KEY),Q_Engine.GetKeyState(W_KEY),Q_Engine.GetKeyState(S_KEY),500 * Q_Engine.GetRenderRate() / 100,Player2);
     Q_Camera.SmoothMoveToTarget(Player2, 0.1);
 } else {
-    if (Q_Engine.GetKeyState(A_KEY) == KEY_PRESSED) {
-        Player.X = Player.X + 500 * Q_Engine.GetRenderRate() / 1000;
-    }
-    if (Q_Engine.GetKeyState(D_KEY) == KEY_PRESSED) {
-        Player.X = Player.X - 500 * Q_Engine.GetRenderRate() / 1000;
-    }
-    if (Q_Engine.GetKeyState(W_KEY) == KEY_PRESSED) {
-        Player.Y = Player.Y + 500 * Q_Engine.GetRenderRate() / 1000;
-    }
-    if (Q_Engine.GetKeyState(S_KEY) == KEY_PRESSED) {
-        Player.Y = Player.Y - 500 * Q_Engine.GetRenderRate() / 1000;
-    }
+    Move_Even(Q_Engine.GetKeyState(A_KEY),Q_Engine.GetKeyState(D_KEY),Q_Engine.GetKeyState(W_KEY),Q_Engine.GetKeyState(S_KEY),500 * Q_Engine.GetRenderRate() / 100,Player);
     Q_Camera.SmoothMoveToTarget(Player, 0.1);
 }
 if (Q_Engine.GetMouseClick(MOUSE_LEFT_BUTTON)) {
@@ -214,14 +188,13 @@ if (Q_Engine.GetMouseClick(MOUSE_LEFT_BUTTON)) {
 }
 if (Q_Engine.GetMouseWheelState(VALUE)) {
     float zoom = Zoom + VALUE * 0.1f;
-    Q_Camera.SetScale(zoom, zoom);
+    Q_Camera.SetScale(zoom);
 }
 GLTexture1.StandardRender(0, 0);
 Q_Camera.WorldToScreen(POINT.X, POINT.Y, _POINT.X, _POINT.Y);
 Q_Engine.FillCircle(_POINT.X, _POINT.Y, 10);
 GLTexture2.StandardRender(Player.X, Player.Y, 0.01f, 0.01f);
 GLTexture3.StandardRender(Player2.X, Player2.Y, 0.05f, 0.05f);
-GLSubtitle.RenderSubtitle(std::to_string(Q_FPS), BLUE_ARGB, 0, 0);
 }
 ```
 ---
